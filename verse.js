@@ -1,23 +1,13 @@
-const tls = require('tls');
+const https = require('https');
 const fs = require('fs');
 
 const options = {
   key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.key'),
-  cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.crt'),
-  rejectUnauthorized: false,
-  requestCert: true
+  cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.crt')
 };
 
-const server = tls.createServer(options, (socket) => {
-  console.log('server connected',
-              socket.authorized ? 'authorized' : 'unauthorized');
-
-  console.log(socket.getPeerCertificate(true).raw);
-
-  socket.write('welcome!\n');
-  socket.setEncoding('utf8');
-  socket.pipe(socket);
-});
-server.listen(8000, () => {
-  console.log('server bound');
-});
+https.createServer(options, (req, res) => {
+    console.log('req', req)
+    res.writeHead(200);
+    res.end('hello world\n');
+}).listen(8443, () => console.log('running'));
