@@ -26,7 +26,7 @@ const options = {
   cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.crt')
 };
 
-https.createServer(options, (req, res) => {
+https.createServer(options, async (req, res) => {
   
   if (req.method === "GET") {
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -34,9 +34,9 @@ https.createServer(options, (req, res) => {
     
     try {
       connection = await pool.getConnection();
-      result = await connection.execute("select count(*) from verse where contains(content,'twenty')>0");
-      //console.log(result.rows[0]);
-      res.end(result.rows[0]);
+      const data = await connection.execute("select count(*) from verse where contains(content,'twenty')>0");
+      //console.log(data);
+      res.end(JSON.stringify(result.rows[0]));
     } catch (err) {
       console.error(err);
     } finally {
