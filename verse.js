@@ -36,7 +36,7 @@ https.createServer(options, async (req, res) => {
       connection = await pool.getConnection();
       const data = await connection.execute("select count(*) from verse where contains(content,'twenty')>0");
       //console.log(data);
-      res.end(JSON.stringify(result.rows[0]));
+      res.end(JSON.stringify(data));
     } catch (err) {
       console.error(err);
     } finally {
