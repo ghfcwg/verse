@@ -5,17 +5,21 @@ const oracledb = require('oracledb'), dbConfig = require("./dbconfig.js");;
 
 let pool;
 
-try {
-  // Typically a pool is created only when the application starts
-  pool = await oracledb.createPool({
-    events: true,
-    user: dbConfig.user, 
-    password: dbConfig.password, 
-    connectString: dbConfig.connectString
-  });
-} catch (err) {
-  console.error(err.message);
+async function run() {
+  try {
+    // Typically a pool is created only when the application starts
+    pool = await oracledb.createPool({
+      events: true,
+      user: dbConfig.user, 
+      password: dbConfig.password, 
+      connectString: dbConfig.connectString
+    });
+  } catch (err) {
+    console.error(err.message);
+  }
 }
+
+run();
 
 const options = {
   key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.key'),
