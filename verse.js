@@ -44,7 +44,7 @@ https.createServer(options, async (req, res) => {
       }
       else queryText = '100';
       const data = await connection.execute(
-        `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t) > 0 order by rating`,
+        `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t, 1) > 0 order by rating`,
         [queryText],
         { maxRows: 10  }
       );
