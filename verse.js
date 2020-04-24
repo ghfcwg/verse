@@ -35,7 +35,7 @@ https.createServer(options, async (req, res) => {
     
     try {
       connection = await pool.getConnection();
-      if(req.query.q !== "") {
+      if(req.query.q !== undefined) {
         queryText = req.query.q;
       }
       else queryText = '100';
