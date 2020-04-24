@@ -36,14 +36,17 @@ https.createServer(options, async (req, res) => {
     let urlParts = url.parse(req.url, true); /*,
         urlParams = urlParts.query, 
         urlPathname = urlParts.pathname*/
-    console.log(urlParts);
+    //console.log(urlParts);
     
     try {
       connection = await pool.getConnection();
-      if(urlParts.q !== undefined) {
+      if(urlParts.q) {
         queryText = urlParts.q;
       }
-      else queryText = '100';
+      else {
+        queryText = '100';
+      }
+      console.log(queryText);
       const data = await connection.execute(
         `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t, 1) > 0 order by rating`,
         [queryText],
