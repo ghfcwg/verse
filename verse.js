@@ -1,6 +1,7 @@
 const https = require('https'),
   fs = require('fs'),
   url = require('url'),
+  querystring = require('querystring'),
   oracledb = require('oracledb'), dbConfig = require("./dbconfig.js");
 
   oracledb.fetchAsString = [ oracledb.CLOB ];
@@ -33,15 +34,15 @@ https.createServer(options, async (req, res) => {
   if (req.method === "GET") {
     res.writeHead(200, { "Content-Type": "application/json" });
     let connection, queryText;
-    let urlParts = url.parse(req.url, true); /*,
-        urlParams = urlParts.query, 
+    let urlParts = url.parse(req.url, true),
+        urlParams = urlParts.query; /*, 
         urlPathname = urlParts.pathname*/
     
     try {
       connection = await pool.getConnection();
-      console.log(urlParts.q);
-      if(urlParts.q) {
-        queryText = urlParts.q;
+      console.log(urlParams.q);
+      if(urlParams.q) {
+        queryText = urlParams.q;
       }
       else {
         queryText = '100';
