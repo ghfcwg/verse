@@ -3,6 +3,8 @@ const https = require('https'),
   url = require('url'),
   oracledb = require('oracledb'), dbConfig = require("./dbconfig.js");
 
+  oracledb.fetchAsString = [ oracledb.CLOB ];
+
 let pool;
 
 async function run() {
@@ -44,7 +46,8 @@ https.createServer(options, async (req, res) => {
       const data = await connection.execute(
         `select content,title,reference,url from verse where contains(content, :t) > 0`,
         [queryText],
-        { maxRows: 10 });
+        { maxRows: 10  }
+      );
       //console.log(data);
       res.end(JSON.stringify(data.rows));
     } catch (err) {
