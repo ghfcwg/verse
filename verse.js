@@ -36,6 +36,7 @@ https.createServer(options, async (req, res) => {
     let urlParts = url.parse(req.url, true); /*,
         urlParams = urlParts.query, 
         urlPathname = urlParts.pathname*/
+    console.log(urlParts);
     
     try {
       connection = await pool.getConnection();
