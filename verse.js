@@ -1,10 +1,7 @@
-const {
-  https = require('https'),
+const https = require('https'),
   fs = require('fs'),
   url = require('url'),
-
-  oracledb = require('oracledb'), dbConfig = require("./dbconfig.js")
-}
+  oracledb = require('oracledb'), dbConfig = require("./dbconfig.js");
 
 let pool;
 
@@ -33,12 +30,10 @@ https.createServer(options, async (req, res) => {
   
   if (req.method === "GET") {
     res.writeHead(200, { "Content-Type": "application/json" });
-    let {
-        connection, queryText,
-        urlParts = url.parse(req.url, true) /*,
+    let connection, queryText;
+    let urlParts = url.parse(req.url, true); /*,
         urlParams = urlParts.query, 
         urlPathname = urlParts.pathname*/
-    }
     
     try {
       connection = await pool.getConnection();
