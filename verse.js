@@ -31,12 +31,20 @@ https.createServer(options, async (req, res) => {
   if (req.method === "GET") {
     res.writeHead(200, { "Content-Type": "application/json" });
     let connection;
+    let queryText;
     
     try {
       connection = await pool.getConnection();
-      const data = await connection.execute("select count(*) from verse where contains(content,'twenty')>0");
+      if(req.query.q !== "") {
+        queryText = req.query.q;
+      }
+      else queryText = '100';
+      const data = await connection.execute(
+        `select content,title,reference,url from verse where contains(content,:t)>0`,
+        [queryText],
+        { maxRows: 10 });
       //console.log(data);
-      res.end(JSON.stringify(data));
+      res.end(JSON.stringify(data.rows));
     } catch (err) {
       console.error(err);
     } finally {
