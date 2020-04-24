@@ -1,7 +1,10 @@
-const https = require('https');
-const fs = require('fs');
+const {
+  https = require('https'),
+  fs = require('fs'),
+  url = require('url'),
 
-const oracledb = require('oracledb'), dbConfig = require("./dbconfig.js");;
+  oracledb = require('oracledb'), dbConfig = require("./dbconfig.js")
+}
 
 let pool;
 
@@ -30,17 +33,21 @@ https.createServer(options, async (req, res) => {
   
   if (req.method === "GET") {
     res.writeHead(200, { "Content-Type": "application/json" });
-    let connection;
-    let queryText;
+    let {
+        connection, queryText,
+        urlParts = url.parse(req.url, true) /*,
+        urlParams = urlParts.query, 
+        urlPathname = urlParts.pathname*/
+    }
     
     try {
       connection = await pool.getConnection();
-      if(req.query.q !== undefined) {
-        queryText = req.query.q;
+      if(urlParts.q !== undefined) {
+        queryText = urlParts.q;
       }
       else queryText = '100';
       const data = await connection.execute(
-        `select content,title,reference,url from verse where contains(content,:t)>0`,
+        `select content,title,reference,url from verse where contains(content, :t) > 0`,
         [queryText],
         { maxRows: 10 });
       //console.log(data);
