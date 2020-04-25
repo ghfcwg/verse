@@ -55,7 +55,7 @@ https.createServer(options, async (req, res) => {
           }
           //console.log(queryText);
           const data = await connection.execute(
-            `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t, 1) > 0 order by rating`,
+            `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t, 1) > 0 order by rating;`,
             [urlQueryText],
             { maxRows: 10  }
           );
@@ -73,6 +73,7 @@ https.createServer(options, async (req, res) => {
             }
           }
         }
+        break;
       case "/url":
         try {
           connection = await pool.getConnection();
@@ -103,6 +104,7 @@ https.createServer(options, async (req, res) => {
             }
           }
         }
+        break;
       default:
         res.writeHead(200);
         res.end('default hello nodejs\n');
