@@ -45,6 +45,7 @@ https.createServer(options, async (req, res) => {
         break;
       case "/query":
         try {
+          queryText = `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t, 1) > 0 order by rating;`
           connection = await pool.getConnection();
           //console.log(urlParams.q);
           if(urlParams.q) {
@@ -55,7 +56,7 @@ https.createServer(options, async (req, res) => {
           }
           //console.log(queryText);
           const data = await connection.execute(
-            `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t, 1) > 0 order by rating;`,
+            queryText,
             [urlQueryText],
             { maxRows: 10  }
           );
@@ -76,6 +77,7 @@ https.createServer(options, async (req, res) => {
         break;
       case "/url":
         try {
+          queryText = `select content,title,reference from verse where url = :u1 order by rowid;`
           connection = await pool.getConnection();
           //console.log(urlParams.q);
           if(urlParams.u) {
@@ -86,11 +88,11 @@ https.createServer(options, async (req, res) => {
           }
           //console.log(queryText);
           const data = await connection.execute(
-            `select content,title,reference from verse where url = :u order by rowid;`,
-            [urlQueryText] /*,
-            { maxRows: 10  }*/
+            queryText,
+            [urlQueryText] ,
+            { maxRows: 100 }
           );
-          //console.log(data);
+          console.log(data);
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(data.rows));
         } catch (err) {
