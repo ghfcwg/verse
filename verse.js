@@ -1,7 +1,7 @@
 const https = require('https'),
   fs = require('fs'),
   url = require('url'),
-  querystring = require('querystring'),
+  //querystring = require('querystring'),
   oracledb = require('oracledb'), dbConfig = require("./dbconfig.js");
 
   oracledb.fetchAsString = [ oracledb.CLOB ];
@@ -32,39 +32,80 @@ const options = {
 https.createServer(options, async (req, res) => {
   
   if (req.method === "GET") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    let connection, queryText;
+    let connection, queryText, urlQueryText;
     let urlParts = url.parse(req.url, true),
-        urlParams = urlParts.query; /*, 
-        urlPathname = urlParts.pathname*/
+        urlParams = urlParts.query
+        ,urlPathname = urlParts.pathname
+    ;
     
-    try {
-      connection = await pool.getConnection();
-      console.log(urlParams.q);
-      if(urlParams.q) {
-        queryText = urlParams.q;
-      }
-      else {
-        queryText = '100';
-      }
-      console.log(queryText);
-      const data = await connection.execute(
-        `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t, 1) > 0 order by rating`,
-        [queryText],
-        { maxRows: 10  }
-      );
-      //console.log(data);
-      res.end(JSON.stringify(data.rows));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      if (connection) {
+    switch (urlPathname) {
+      case "/":
+        res.writeHead(200);
+        res.end('root hello nodejs\n');
+        break;
+      case "/query":
         try {
-        await connection.close();
+          connection = await pool.getConnection();
+          //console.log(urlParams.q);
+          if(urlParams.q) {
+            urlQueryText = urlParams.q;
+          }
+          else {
+            urlQueryText = '100';
+          }
+          //console.log(queryText);
+          const data = await connection.execute(
+            `select content,title,reference,url, SCORE(1) as rating from verse where contains(content, :t, 1) > 0 order by rating`,
+            [urlQueryText],
+            { maxRows: 10  }
+          );
+          //console.log(data);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(data.rows));
         } catch (err) {
-        console.error(err);
+          console.error(err);
+        } finally {
+          if (connection) {
+            try {
+            await connection.close();
+            } catch (err) {
+            console.error(err);
+            }
+          }
         }
-      }
+      case "/url":
+        try {
+          connection = await pool.getConnection();
+          //console.log(urlParams.q);
+          if(urlParams.u) {
+            urlQueryText = urlParams.u;
+          }
+          else {
+            urlQueryText = 'https://godible.org/blogs/daily-godible/411-the-opening-of-the-era-of-women-and-the-world-speaking-tours';
+          }
+          //console.log(queryText);
+          const data = await connection.execute(
+            `select content,title,reference from verse where url = :u order by rowid;`,
+            [urlQueryText] /*,
+            { maxRows: 10  }*/
+          );
+          //console.log(data);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(data.rows));
+        } catch (err) {
+          console.error(err);
+        } finally {
+          if (connection) {
+            try {
+            await connection.close();
+            } catch (err) {
+            console.error(err);
+            }
+          }
+        }
+      default:
+        res.writeHead(200);
+        res.end('default hello nodejs\n');
     }
     //fs.createReadStream("./public/form.html", "UTF-8").pipe(res);
   } /*else if (req.method === "POST") {
