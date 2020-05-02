@@ -58,7 +58,7 @@ https.createServer(options, async (req, res) => {
           const data = await connection.execute(
             queryText,
             [urlQueryText],
-            { maxRows: 10 }
+            { maxRows: 10, outFormat: oracledb.OUT_FORMAT_OBJECT }
           );
           //console.log(data);
           res.writeHead(200, { "Content-Type": "application/json" });
@@ -90,7 +90,7 @@ https.createServer(options, async (req, res) => {
           const data = await connection.execute(
             queryText,
             [urlQueryText] ,
-            { maxRows: 100 }
+            { maxRows: 100, outFormat: oracledb.OUT_FORMAT_OBJECT }
           );
           //console.log(data);
           res.writeHead(200, { "Content-Type": "application/json" });
