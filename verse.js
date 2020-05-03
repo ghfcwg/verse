@@ -45,7 +45,7 @@ https.createServer(options, async (req, res) => {
         break;
       case "/query":
         try {
-          queryText = `select rowid as "id",content as "content",title as "title",reference as "reference",url as "url", SCORE(1) "rating" from verse where contains(content, :t, 1) > 0 order by rating`
+          queryText = `select rowid as "id",content as "content",title as "title",reference as "reference",url as "url", SCORE(1) "rating" from verse where contains(content, :t, 1) > 0 order by "rating"`
           connection = await pool.getConnection();
           //console.log(urlParams.q);
           if(urlParams.q) {
