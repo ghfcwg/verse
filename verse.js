@@ -63,7 +63,7 @@ https.createServer(options, async (req, res) => {
           //console.log(data);
           res.writeHead(200, { 
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "https://chungwon.glass:8443",
+            "Access-Control-Allow-Origin": "https://chungwon.glass",
             "Vary": "Origin" 
           });
           res.end(JSON.stringify(data.rows));
