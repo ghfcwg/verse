@@ -59,7 +59,7 @@ http2.createSecureServer(options, async (req, res) => {
           const data = await connection.execute(
             queryText,
             [urlQueryText],
-            { maxRows: 40, outFormat: oracledb.OUT_FORMAT_OBJECT }
+            { maxRows: 25, outFormat: oracledb.OUT_FORMAT_OBJECT }
           );
           //console.log(data);
           res.writeHead(200, { 
