@@ -61,7 +61,11 @@ https.createServer(options, async (req, res) => {
             { maxRows: 40, outFormat: oracledb.OUT_FORMAT_OBJECT }
           );
           //console.log(data);
-          res.writeHead(200, { "Content-Type": "application/json" });
+          res.writeHead(200, { 
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "https://chungwon.glass:8443",
+            "Vary": "Origin" 
+          });
           res.end(JSON.stringify(data.rows));
         } catch (err) {
           console.error(err);
