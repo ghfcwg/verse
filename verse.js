@@ -1,4 +1,4 @@
-const https = require('https'),
+const http2 = require('http2'),
   fs = require('fs'),
   url = require('url'),
   //querystring = require('querystring'),
@@ -26,10 +26,11 @@ run();
 
 const options = {
   key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.key'),
-  cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.crt')
+  cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.crt'),
+  allowHTTP1: true,
 };
 
-https.createServer(options, async (req, res) => {
+http2.createSecureServer(options, async (req, res) => {
   
   if (req.method === "GET") {
     let connection, queryText, urlQueryText;
