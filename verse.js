@@ -5,6 +5,8 @@ const http2 = require('http2'),
   oracledb = require('oracledb'), dbConfig = require("./dbconfig.js");
 
   oracledb.fetchAsString = [ oracledb.CLOB ];
+  oracledb.autoCommit = true; // The general recommendation for SODA applications is to turn on autoCommit globally 
+  // https://oracle.github.io/node-oracledb/doc/api.html#sodaoverview
 
 let pool;
 
@@ -117,18 +119,38 @@ http2.createSecureServer(options, async (req, res) => {
         res.end('default hello nodejs\n');
     }
     //fs.createReadStream("./public/form.html", "UTF-8").pipe(res);
-  } /*else if (req.method === "POST") {
+  } else if (req.method === "POST") {
+    let connection, soda;
+    let urlParts = url.parse(req.url, true)
+        ,urlPathname = urlParts.pathname
+    ;
+    
+    switch (urlPathname) {
+      case "/highlight":
+        var body = "";
+        req.on("data", function (chunk) {
+            body += chunk;
+        });
+        try {
+          soda = await connection.getSodaDatabase();
+          collection = await soda.openCollection("verse_highlight");
+          await collection.insertOne(JSON.parse(body));
+          
+        } catch(err) {
+          console.error(err);
+        }
 
-      var body = "";
-      req.on("data", function (chunk) {
-          body += chunk;
-      });
-
-      req.on("end", function(){
-          res.writeHead(200, { "Content-Type": "text/html" });
-          res.end(body);
-      });
-  }*/
+        req.on("end", function(){
+            res.writeHead(200, { "Content-Type": "application/json" });
+            console.log(JSON.parse(body));
+            res.end(JSON.parse(body));
+        });
+      break;
+      default:
+        res.writeHead(404);
+        res.end('default post nodejs');
+      }
+  }
 
   /*  res.writeHead(200);
     res.end('hello world\n');*/
