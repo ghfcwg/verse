@@ -134,7 +134,7 @@ http2.createSecureServer(options, async (req, res) => {
         try {
           soda = await connection.getSodaDatabase();
           collection = await soda.openCollection("verse_highlight");
-          await collection.insertOne(JSON.parse(body));
+          await collection.insertOne(body);
           
         } catch(err) {
           console.error(err);
