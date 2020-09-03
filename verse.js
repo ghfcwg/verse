@@ -128,8 +128,8 @@ http2.createSecureServer(options, async (req, res) => {
     switch (urlPathname) {
       case "/highlight":
         var body = "";
-        req.on("data", function (chunk) {
-            body += chunk;
+        req.on("data", chunk => {
+            body += chunk.toString();
         });
         try {
           console.log(body);
@@ -143,10 +143,10 @@ http2.createSecureServer(options, async (req, res) => {
           console.error(err);
         }
 
-        req.on("end", function(){
+        req.on("end", () => {
             res.writeHead(200, { "Content-Type": "application/json" });
-            console.log(JSON.parse(body));
-            res.end(JSON.parse(body));
+            console.log(body);
+            res.end(body);
         });
       break;
       default:
