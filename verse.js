@@ -133,9 +133,11 @@ http2.createSecureServer(options, async (req, res) => {
         });
         try {
           console.log(body);
-          console.debug("Initiating json db write")
+          console.log("Initiating json db write")
           soda = await connection.getSodaDatabase();
+          console.log(soda);
           collection = await soda.openCollection("verse_highlight");
+          console.log(collection);
           const result = await collection.insertOne(body);
           console.log(result);
           
