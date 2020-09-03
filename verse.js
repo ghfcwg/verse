@@ -132,9 +132,12 @@ http2.createSecureServer(options, async (req, res) => {
             body += chunk;
         });
         try {
+          console.log(body);
+          console.debug("Initiating json db write")
           soda = await connection.getSodaDatabase();
           collection = await soda.openCollection("verse_highlight");
           await collection.insertOne(body);
+          console.log("wrote json to db");
           
         } catch(err) {
           console.error(err);
