@@ -137,7 +137,7 @@ http2.createSecureServer(options, async (req, res) => {
                 request.connection.destroy();
         });
 
-        req.on("end", () => {
+        req.on("end", async () => {
             res.writeHead(200, { "Content-Type": "application/json" });
             try {
               connection = await pool.getConnection();
