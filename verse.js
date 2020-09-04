@@ -130,31 +130,36 @@ http2.createSecureServer(options, async (req, res) => {
         var body = "";
         req.on("data", chunk => {
             body += chunk.toString();
+
+            // Too much POST data, kill the connection!
+            // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+            if (body.length > 1e6)
+                request.connection.destroy();
         });
-        try {
-          connection = await pool.getConnection();
-          soda = connection.getSodaDatabase();
-          //console.log(soda);
-          collection = await soda.openCollection("verse_highlight");
-          //console.log(collection);
-          await collection.insertOne(body);
-          
-        } catch(err) {
-          console.error(err);
-        } finally {
-          if (connection) {
-            try {
-            await connection.close();
-            } catch (err) {
-            console.error(err);
-            }
-          }
-        }
 
         req.on("end", () => {
             res.writeHead(200, { "Content-Type": "application/json" });
-            console.log(body);
-            res.end(body);
+            try {
+              connection = await pool.getConnection();
+              soda = connection.getSodaDatabase();
+              //console.log(soda);
+              collection = await soda.openCollection("verse_highlight");
+              //console.log(collection);
+              await collection.insertOne(JSON.parse(body));
+              
+            } catch(err) {
+              console.error(err);
+            } finally {
+              if (connection) {
+                try {
+                await connection.close();
+                } catch (err) {
+                console.error(err);
+                }
+              }
+            }
+            console.log(JSON.parse(body));
+            res.end(JSON.parse(body));
         });
       break;
       default:
