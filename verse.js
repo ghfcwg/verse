@@ -132,17 +132,23 @@ http2.createSecureServer(options, async (req, res) => {
             body += chunk.toString();
         });
         try {
-          console.log(body);
-          console.log("Initiating json db write")
-          soda = await connection.getSodaDatabase();
-          console.log(soda);
+          connection = await pool.getConnection();
+          soda = connection.getSodaDatabase();
+          //console.log(soda);
           collection = await soda.openCollection("verse_highlight");
-          console.log(collection);
-          const result = await collection.insertOne(body);
-          console.log(result);
+          //console.log(collection);
+          await collection.insertOne(body);
           
         } catch(err) {
           console.error(err);
+        } finally {
+          if (connection) {
+            try {
+            await connection.close();
+            } catch (err) {
+            console.error(err);
+            }
+          }
         }
 
         req.on("end", () => {
