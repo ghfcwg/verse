@@ -2,3 +2,7 @@ dbConfig.js
 node_modules
 package-lock.json
 nodesoda.js
+verse_test.js
+localhost-privkey.pem
+localhost.crt
+localhost.key

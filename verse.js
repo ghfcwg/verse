@@ -100,7 +100,9 @@ http2.createSecureServer(options, async (req, res) => {
             { maxRows: 100, outFormat: oracledb.OUT_FORMAT_OBJECT }
           );
           //console.log(data);
-          res.writeHead(200, { "Content-Type": "application/json" });
+          res.writeHead(200, { "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "https://chungwon.glass",
+          "Vary": "Origin"  });
           res.end(JSON.stringify(data.rows));
         } catch (err) {
           console.error(err);
@@ -118,33 +120,29 @@ http2.createSecureServer(options, async (req, res) => {
         res.writeHead(200);
         res.end('default hello nodejs\n');
     }
-    //fs.createReadStream("./public/form.html", "UTF-8").pipe(res);
   } else if (req.method === "POST") {
     let connection, soda;
     let urlParts = url.parse(req.url, true)
         ,urlPathname = urlParts.pathname
     ;
+    let body = '';
     
     switch (urlPathname) {
       case "/highlight":
-        var body = "";
         req.on("data", chunk => {
             body += chunk.toString();
 
             // Too much POST data, kill the connection!
             // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
             if (body.length > 1e6)
-                request.connection.destroy();
+                req.connection.destroy();
         });
 
         req.on("end", async () => {
-            res.writeHead(200, { "Content-Type": "application/json" });
             try {
               connection = await pool.getConnection();
               soda = connection.getSodaDatabase();
-              //console.log(soda);
               collection = await soda.openCollection("verse_highlight");
-              //console.log(collection);
               await collection.insertOne(JSON.parse(body));
               
             } catch(err) {
@@ -158,19 +156,18 @@ http2.createSecureServer(options, async (req, res) => {
                 }
               }
             }
-            console.log(JSON.parse(body));
-            res.end(JSON.parse(body));
-        });
+            res.writeHead(200, {'Content-Type': 'text/plain',
+                "Access-Control-Allow-Origin": "https://chungwon.glass",
+                "Vary": "Origin"  });
+            res.end('post received');
+          });
       break;
       default:
         res.writeHead(404);
         res.end('default post nodejs');
       }
   }
-
-  /*  res.writeHead(200);
-    res.end('hello world\n');*/
-}).listen(8443, () => console.log('running'));
+}).listen(8443, () => console.log('running')).setTimeout(15000);
 
 // Close the default connection pool with 10 seconds draining, and exit
 async function closePoolAndExit() {
