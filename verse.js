@@ -52,7 +52,7 @@ http2.createSecureServer(options, async (req, res) => {
           connection = await pool.getConnection();
           //console.log(urlParams.q);
           if(urlParams.q) {
-            urlQueryText = urlParams.q;
+            urlQueryText = decodeURI(urlParams.q);
           }
           else {
             urlQueryText = '100';
