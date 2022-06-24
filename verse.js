@@ -15,8 +15,8 @@ async function run() {
     // Typically a pool is created only when the application starts
     pool = await oracledb.createPool({
       events: true,
-      user: dbConfig.user, 
-      password: dbConfig.password, 
+      user: dbConfig.user,
+      password: dbConfig.password,
       connectString: dbConfig.connectString
     });
   } catch (err) {
@@ -33,14 +33,14 @@ const options = {
 };
 
 http2.createSecureServer(options, async (req, res) => {
-  
+
   if (req.method === "GET") {
     let connection, queryText, urlQueryText;
     let urlParts = url.parse(req.url, true),
         urlParams = urlParts.query
         ,urlPathname = urlParts.pathname
     ;
-    
+
     switch (urlPathname) {
       case "/":
         res.writeHead(200);
@@ -144,7 +144,7 @@ http2.createSecureServer(options, async (req, res) => {
               soda = connection.getSodaDatabase();
               collection = await soda.openCollection("verse_highlight");
               await collection.insertOne(JSON.parse(body));
-              
+
             } catch(err) {
               console.error(err);
             } finally {
@@ -177,7 +177,7 @@ http2.createSecureServer(options, async (req, res) => {
               soda = connection.getSodaDatabase();
               collection = await soda.openCollection("j_receipts");
               await collection.insertOne(JSON.parse(body));
-              
+
             } catch(err) {
               console.error(err);
             } finally {
