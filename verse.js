@@ -27,8 +27,8 @@ async function run() {
 run();
 
 const options = {
-  key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.key'),
-  cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/chungwon.glass.crt'),
+  key: fs.readFileSync('/etc/letsencrypt/live/chungwon.glass/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/chungwon.glass/fullchain.pem'),
   allowHTTP1: true,
 };
 
@@ -135,7 +135,7 @@ http2.createSecureServer(options, async (req, res) => {
             // Too much POST data, kill the connection!
             // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
             if (body.length > 1e6)
-                req.connection.destroy();
+                req.socket.destroy();
         });
 
         req.on("end", async () => {
@@ -143,6 +143,39 @@ http2.createSecureServer(options, async (req, res) => {
               connection = await pool.getConnection();
               soda = connection.getSodaDatabase();
               collection = await soda.openCollection("verse_highlight");
+              await collection.insertOne(JSON.parse(body));
+              
+            } catch(err) {
+              console.error(err);
+            } finally {
+              if (connection) {
+                try {
+                await connection.close();
+                } catch (err) {
+                console.error(err);
+                }
+              }
+            }
+            res.writeHead(200, {'Content-Type': 'text/plain',
+                "Access-Control-Allow-Origin": "https://chungwon.glass",
+                "Vary": "Origin"  });
+            res.end('post received');
+          });
+      case "/receipts":
+        req.on("data", chunk => {
+            body += chunk.toString();
+
+            // Too much POST data, kill the connection!
+            // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+            if (body.length > 1e6)
+                req.socket.destroy();
+        });
+
+        req.on("end", async () => {
+            try {
+              connection = await pool.getConnection();
+              soda = connection.getSodaDatabase();
+              collection = await soda.openCollection("j_receipts");
               await collection.insertOne(JSON.parse(body));
               
             } catch(err) {
