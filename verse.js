@@ -64,10 +64,10 @@ http2.createSecureServer(options, async (req, res) => {
             { maxRows: 25, outFormat: oracledb.OUT_FORMAT_OBJECT }
           );
           //console.log(data);
-          res.writeHead(200, { 
+          res.writeHead(200, {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "https://chungwon.glass",
-            "Vary": "Origin" 
+            "Vary": "Origin"
           });
           res.end(JSON.stringify(data.rows));
         } catch (err) {
@@ -126,7 +126,7 @@ http2.createSecureServer(options, async (req, res) => {
         ,urlPathname = urlParts.pathname
     ;
     let body = '';
-    
+
     switch (urlPathname) {
       case "/highlight":
         req.on("data", chunk => {
